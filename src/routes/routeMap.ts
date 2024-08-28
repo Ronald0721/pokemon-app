@@ -10,7 +10,7 @@ interface RouteType {
 const routeMap: Array<RouteType> = [
   {
     component: Home,
-    path: "/home",
+    path: "/",
     exact: true,
   },
 ];
