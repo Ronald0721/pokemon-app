@@ -9,24 +9,6 @@ import {
 import debounce from "lodash.debounce";
 import pokemonLogo from "../../assets/images/pokemon.png";
 
-const styles = (theme: Theme) =>
-  createStyles({
-    root: {
-      background: "#E3350D",
-      padding: "10px",
-    },
-    logoBox: {
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      height: "100%",
-    },
-    logo: {
-      width: "100%",
-      maxWidth: 180,
-    },
-  });
-
 // Props
 interface Props {
   onSearch: Function;
@@ -94,5 +76,23 @@ class Search extends Component<Props, S> {
     );
   }
 }
+
+const styles = (theme: Theme) =>
+  createStyles({
+    root: {
+      background: "#E3350D",
+      padding: "10px",
+    },
+    logoBox: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "100%",
+    },
+    logo: {
+      width: "100%",
+      maxWidth: 180,
+    },
+  });
 
 export default withStyles(styles)(Search);

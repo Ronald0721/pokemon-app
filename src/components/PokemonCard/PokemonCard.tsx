@@ -18,24 +18,6 @@ import getPokemonTypeColor from "../../services/getPokemonTypeColor";
 import { SkeletonLoader, PokemonTypeChip } from "../index";
 import { PokemonDetails } from "../../types/pokemonTypes";
 
-const styles = (theme: Theme) =>
-  createStyles({
-    root: {
-      maxWidth: 200,
-      cursor: "pointer",
-    },
-    img: {
-      display: "flex",
-      justifyContent: "center",
-    },
-    pokemonName: {
-      textTransform: "capitalize",
-    },
-    pokemonType: {
-      textTransform: "capitalize",
-    },
-  });
-
 // Props
 interface Props extends WithStyles<typeof styles> {
   pokemonQuery: string;
@@ -99,43 +81,81 @@ class PokemonCard extends Component<Props, State> {
 
     return (
       <>
-        {loading ? (
+        {/* {loading ? (
           <SkeletonLoader variant="rect" width={200} height={200} count={1} />
-        ) : (
-          <Link to={`/pokemon/${pokemon.name}`}>
-            <Card className={classes.root}>
-              <CardActionArea>
-                <CardContent>
+        ) : ( */}
+        <Link to={`/pokemon/${pokemon.name}`}>
+          <Card className={classes.root}>
+            <CardActionArea>
+              <CardContent>
+                {loading ? (
+                  <Box className={classes.img}>
+                    <SkeletonLoader
+                      variant="rect"
+                      width={100}
+                      height={96}
+                      count={1}
+                    />
+                  </Box>
+                ) : (
                   <Box className={classes.img}>
                     <img
                       alt={pokemon.name}
                       src={pokemon.sprites.front_default}
                     ></img>
                   </Box>
-                  <Typography
-                    gutterBottom
-                    variant="h6"
-                    component="h6"
-                    className={classes.pokemonName}
-                  >
-                    {pokemon.name}
-                  </Typography>
-                  {pokemon.types.map((type, index) => (
+                )}
+
+                <Typography
+                  gutterBottom
+                  variant="h6"
+                  component="h6"
+                  className={classes.pokemonName}
+                >
+                  {loading ? (
+                    <SkeletonLoader variant="text" width={100} count={1} />
+                  ) : (
+                    pokemon.name
+                  )}
+                </Typography>
+                {loading ? (
+                  <SkeletonLoader variant="circle" height={15} width={30} />
+                ) : (
+                  pokemon.types.map((type, index) => (
                     <PokemonTypeChip
                       size="small"
                       key={index}
                       label={type.type.name}
                       color={getPokemonTypeColor(type.type.name)}
                     />
-                  ))}
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          </Link>
-        )}
+                  ))
+                )}
+              </CardContent>
+            </CardActionArea>
+          </Card>
+        </Link>
+        {/* )} */}
       </>
     );
   }
 }
+
+const styles = (theme: Theme) =>
+  createStyles({
+    root: {
+      maxWidth: 200,
+      cursor: "pointer",
+    },
+    img: {
+      display: "flex",
+      justifyContent: "center",
+    },
+    pokemonName: {
+      textTransform: "capitalize",
+    },
+    pokemonType: {
+      textTransform: "capitalize",
+    },
+  });
 
 export default withStyles(styles)(PokemonCard);

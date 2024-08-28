@@ -9,17 +9,6 @@ import {
 import { PokemonCard } from "../index";
 import { Pokemon } from "../../types/pokemonTypes";
 
-const styles = (theme: Theme) =>
-  createStyles({
-    root: {
-      overflow: "hidden",
-      marginTop: "20px",
-    },
-    control: {
-      padding: theme.spacing(1),
-    },
-  });
-
 // Props
 interface Props extends WithStyles<typeof styles> {
   pokemons: Pokemon[];
@@ -57,5 +46,16 @@ class PokemonList extends Component<Props, S> {
     );
   }
 }
+
+const styles = (theme: Theme) =>
+  createStyles({
+    root: {
+      overflow: "hidden",
+      marginTop: "20px",
+    },
+    control: {
+      padding: theme.spacing(1),
+    },
+  });
 
 export default withStyles(styles)(PokemonList);
