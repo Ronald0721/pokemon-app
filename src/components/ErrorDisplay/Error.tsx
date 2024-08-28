@@ -12,7 +12,6 @@ interface S {}
 export default class Error extends Component<Props, S> {
   render() {
     const { error } = this.props;
-    console.log(error);
     return (
       <Typography className="error-message" align="center">
         {error}

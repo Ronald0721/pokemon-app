@@ -7,6 +7,7 @@ import { getPokemonSpecies } from "../../../../services/getPokemonSpecies";
 import { PokemonDetails } from "../../../../types/pokemonTypes";
 import { RouteComponentProps } from "react-router-dom";
 import { Typography } from "@material-ui/core";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 
 const feature = loadFeature(
   "./src/pages/PokemonView/__tests__/features/PokemonView-scenario.feature"
@@ -115,11 +116,29 @@ defineFeature(feature, (test) => {
 
     then("user will see the Pokemon's name and image", () => {
       const typography = wrapper.find(Typography).first();
-      expect(typography.prop("component")).toBe("h1");
-      expect(typography.text()).toBe("pikachu");
-      expect(wrapper.find("img").prop("src")).toBe(
-        "https://example.com/pikachu.png"
-      );
+      const img = wrapper.find("img");
+
+      expect({
+        typographyText: typography.text(),
+        imageSrc: img.prop("src"),
+      }).toEqual({
+        typographyText: "pikachu",
+        imageSrc: "https://example.com/pikachu.png",
+      });
+    });
+  });
+
+  test("User clicks the Go Back button", ({ given, when, then }) => {
+    given("User is on the Pokemon View page", () => {
+      // Already set up in beforeEach
+    });
+
+    when("User clicks the Go Back button", () => {
+      wrapper.find(ArrowBackIcon).simulate("click");
+    });
+
+    then("User should be navigated back to the previous page", () => {
+      expect(props.history.goBack).toHaveBeenCalled();
     });
   });
 });

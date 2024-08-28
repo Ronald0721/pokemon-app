@@ -8,7 +8,6 @@ import {
   Typography,
 } from "@material-ui/core";
 import RouteWrapper from "./routes/RouteWrapper";
-import "./App.css";
 
 let theme = responsiveFontSizes(
   createTheme({

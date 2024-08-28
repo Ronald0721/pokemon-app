@@ -48,8 +48,20 @@ export default class Home extends Component<Props, S> {
     const { pokemonList, limit, offset, pokemonQuery } = this.state;
 
     try {
-      this.setState({ loading: true });
-      if (pokemonQuery) {
+      pokemonList.length === 1
+        ? this.setState({ pokemonList: [], loading: true })
+        : this.setState({ loading: true });
+
+      if (!pokemonQuery) {
+        const { pokemons, hasMore } = await getPokemons(limit, offset);
+        this.setState((prevState) => ({
+          pokemonList: [...prevState.pokemonList, ...pokemons],
+          loading: false,
+          hasMore,
+          offset: prevState.offset + limit,
+          error: null,
+        }));
+      } else {
         const pokemon = await getPokemon(
           `https://pokeapi.co/api/v2/pokemon/${pokemonQuery}`
         );
@@ -59,16 +71,6 @@ export default class Home extends Component<Props, S> {
           hasMore: false,
           error: null,
         });
-      } else {
-        if (pokemonList.length === 1) this.setState({ pokemonList: [] });
-        const { pokemons, hasMore } = await getPokemons(limit, offset);
-        this.setState((prevState) => ({
-          pokemonList: [...prevState.pokemonList, ...pokemons],
-          loading: false,
-          hasMore,
-          offset: prevState.offset + limit,
-          error: null,
-        }));
       }
     } catch (err) {
       this.setState({
