@@ -50,14 +50,11 @@ class PokemonProfileController extends Component<Props, S> {
   }
 
   async componentDidMount() {
-    const id = getParams(2);
-    if (id) {
-      await this.fetchPokemon(id);
-      await this.fetchSpecies();
-    }
+    await this.fetchPokemon(getParams(2));
+    await this.fetchSpecies();
   }
 
-  fetchPokemon = async (id: string | number) => {
+  fetchPokemon = async (id: string | null) => {
     const pokemon = await getPokemon(`https://pokeapi.co/api/v2/pokemon/${id}`);
     this.setState({ pokemon });
   };

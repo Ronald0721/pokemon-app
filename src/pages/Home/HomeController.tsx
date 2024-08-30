@@ -89,6 +89,6 @@ export default class Home extends Component<Props, S> {
   };
 
   fetchMoreData = async () => {
-    this.state.hasMore && (await this.fetchPokemons());
+    await this.fetchPokemons();
   };
 }
