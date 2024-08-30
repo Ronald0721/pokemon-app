@@ -7,13 +7,19 @@ interface Props {
 }
 
 // State
-interface S {
-  sampleStateNumber: number;
-}
+interface S {}
 
-export default class BackBtn extends Component<Props, S> {
+class BackBtn extends Component<Props, S> {
   render() {
     const { onBack } = this.props;
-    return <ArrowBackIcon onClick={() => onBack()} />;
+    return (
+      <ArrowBackIcon
+        data-testid="back-btn"
+        style={{ marginTop: "8px" }}
+        onClick={() => onBack()}
+      />
+    );
   }
 }
+
+export default BackBtn;

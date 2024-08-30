@@ -6,7 +6,7 @@ import { getPokemon, getPokemons } from "../../../../services/getPokemons";
 import { Pokemon, PokemonDetails } from "../../../../types/pokemonTypes";
 
 const feature = loadFeature(
-  "./src/pages/Home/__tests__/features/Home-scenario.feature"
+  "./src/pages/Home/__tests__/features/HomeView-scenario.feature"
 );
 
 jest.mock("../../../../services/getPokemons");
@@ -17,6 +17,7 @@ defineFeature(feature, (test) => {
   let spyHandleSinglePokemonCase: jest.SpyInstance;
 
   const mockPokemon: PokemonDetails = {
+    id: 0,
     name: "pikachu",
     height: "7",
     sprites: {

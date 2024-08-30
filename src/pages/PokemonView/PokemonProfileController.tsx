@@ -23,6 +23,7 @@ class PokemonProfileController extends Component<Props, S> {
     this.state = {
       loading: true,
       pokemon: {
+        id: 0,
         name: "",
         height: "",
         sprites: {

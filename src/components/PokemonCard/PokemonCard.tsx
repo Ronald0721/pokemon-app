@@ -35,6 +35,7 @@ class PokemonCard extends Component<Props, State> {
 
     this.state = {
       pokemon: {
+        id: 0,
         name: "",
         sprites: {
           front_default: "",

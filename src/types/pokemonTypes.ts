@@ -12,6 +12,7 @@ export interface PokemonType {
 }
 
 export interface PokemonDetails {
+  id?: number;
   name: string;
   height: string;
   sprites: {
@@ -40,4 +41,8 @@ export interface TextEntry {
     name: string;
     url: string;
   };
+}
+
+export interface PokemonSpecies {
+  flavor_text_entries: TextEntry[];
 }

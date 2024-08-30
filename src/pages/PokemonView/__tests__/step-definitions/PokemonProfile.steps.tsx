@@ -5,11 +5,16 @@ import { getPokemon } from "../../../../services/getPokemons";
 import { getPokemonSpecies } from "../../../../services/getPokemonSpecies";
 import { PokemonDetails } from "../../../../types/pokemonTypes";
 import { getParams } from "../../../../utils/getParams";
-import { Typography } from "@material-ui/core";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import {
+  BackBtn,
+  PokemonImage,
+  PokemonInfo,
+  PokemonName,
+} from "../../../../components";
 
 const feature = loadFeature(
-  "./src/pages/PokemonView/__tests__/features/PokemonView-scenario.feature"
+  "./src/pages/PokemonView/__tests__/features/PokemonProfileView-scenario.feature"
 );
 
 jest.mock("../../../../services/getPokemons");
@@ -17,10 +22,12 @@ jest.mock("../../../../services/getPokemonSpecies");
 jest.mock("../../../../utils/getParams");
 
 defineFeature(feature, (test) => {
-  let wrapper: ShallowWrapper;
+  let pokemonViewWrapper: ShallowWrapper;
   let instance: PokemonProfileView;
+  let spyGoBack: jest.SpyInstance;
 
-  const mockPokemonDetails: PokemonDetails = {
+  const mockPokemon: PokemonDetails = {
+    id: 0,
     name: "pikachu",
     height: "7",
     sprites: {
@@ -53,10 +60,9 @@ defineFeature(feature, (test) => {
 
   beforeEach(() => {
     jest.resetModules();
-    jest.spyOn(window.history, "back").mockImplementation(() => {});
 
     (getParams as jest.Mock).mockReturnValue({ id: "pikachu" });
-    (getPokemon as jest.Mock).mockResolvedValue(mockPokemonDetails);
+    (getPokemon as jest.Mock).mockResolvedValue(mockPokemon);
     (getPokemonSpecies as jest.Mock).mockResolvedValue({
       flavor_text_entries: [
         {
@@ -69,8 +75,8 @@ defineFeature(feature, (test) => {
       ],
     });
 
-    wrapper = shallow(<PokemonProfileView />);
-    instance = wrapper.instance() as PokemonProfileView;
+    pokemonViewWrapper = shallow(<PokemonProfileView />);
+    instance = pokemonViewWrapper.instance() as PokemonProfileView;
   });
 
   test("User views Pokemon View Page", ({ given, when, then }) => {
@@ -80,34 +86,39 @@ defineFeature(feature, (test) => {
 
     when("the Pokemon data is fetched successfully", async () => {
       await instance.componentDidMount();
-      wrapper.update();
+      pokemonViewWrapper.update();
     });
 
-    then("user will see the Pokemon's name and image", () => {
-      const typography = wrapper.find(Typography).first();
-      const img = wrapper.find("img");
+    then("user will see the Pokemon's name", () => {
+      expect(pokemonViewWrapper.find(PokemonName)).toHaveLength(1);
+    });
 
-      expect({
-        typographyText: typography.text(),
-        imageSrc: img.prop("src"),
-      }).toEqual({
-        typographyText: "pikachu",
-        imageSrc: "https://example.com/pikachu.png",
-      });
+    then("user will see the Pokemon's image", () => {
+      expect(pokemonViewWrapper.find(PokemonImage)).toHaveLength(1);
+    });
+
+    then("user will see the Pokemon's info", () => {
+      expect(pokemonViewWrapper.find(PokemonInfo)).toHaveLength(1);
     });
   });
 
   test("User clicks the Go Back button", ({ given, when, then }) => {
     given("User is on the Pokemon View page", () => {
-      // Already initialized in beforeEac
+      spyGoBack = jest
+        .spyOn(window.history, "back")
+        .mockImplementation(() => {});
     });
 
     when("User clicks the Go Back button", () => {
-      wrapper.find(ArrowBackIcon).simulate("click");
+      pokemonViewWrapper
+        .find(BackBtn)
+        .dive()
+        .find(ArrowBackIcon)
+        .simulate("click");
     });
 
     then("User should be navigated back to the previous page", () => {
-      expect(window.history.back).toHaveBeenCalled();
+      expect(spyGoBack).toHaveBeenCalled();
     });
   });
 });
