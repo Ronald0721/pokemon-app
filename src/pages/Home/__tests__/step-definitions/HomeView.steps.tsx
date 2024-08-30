@@ -1,6 +1,6 @@
 import { shallow, ShallowWrapper } from "enzyme";
 import { defineFeature, loadFeature } from "jest-cucumber";
-import Home from "../../../Home";
+import HomeView from "../../HomeView";
 import { SearchBar, PokemonList, ErrorDisplay } from "../../../../components";
 import { getPokemon, getPokemons } from "../../../../services/getPokemons";
 import { Pokemon, PokemonDetails } from "../../../../types/pokemonTypes";
@@ -12,8 +12,9 @@ const feature = loadFeature(
 jest.mock("../../../../services/getPokemons");
 
 defineFeature(feature, (test) => {
-  let HomeWrapper: ShallowWrapper<typeof Home>;
-  let instance: Home;
+  let HomeWrapper: ShallowWrapper<typeof HomeView>;
+  let instance: HomeView;
+  let spyHandleSinglePokemonCase: jest.SpyInstance;
 
   const mockPokemon: PokemonDetails = {
     name: "pikachu",
@@ -63,8 +64,8 @@ defineFeature(feature, (test) => {
         hasMore: true,
       });
 
-      HomeWrapper = shallow(<Home />);
-      instance = HomeWrapper.instance() as Home;
+      HomeWrapper = shallow(<HomeView />);
+      instance = HomeWrapper.instance() as HomeView;
     });
 
     when("User successfully load Home Page", () => {
@@ -80,12 +81,25 @@ defineFeature(feature, (test) => {
     });
   });
 
-  test("User searches for a Pokemon", async ({ given, when, then }) => {
+  test("User searches for a Pokemon and then clears the search bar", async ({
+    given,
+    when,
+    then,
+  }) => {
     given("User is on the Home Page", () => {
       (getPokemon as jest.Mock).mockResolvedValue(mockPokemon);
+      (getPokemons as jest.Mock).mockResolvedValue({
+        pokemons: mockPokemons,
+        hasMore: true,
+      });
 
-      HomeWrapper = shallow(<Home />);
-      instance = HomeWrapper.instance() as Home;
+      HomeWrapper = shallow(<HomeView />);
+      instance = HomeWrapper.instance() as HomeView;
+
+      spyHandleSinglePokemonCase = jest.spyOn(
+        instance,
+        "handleSinglePokemonCase"
+      );
     });
 
     when("User enters a Pokemon name in the search bar", async () => {
@@ -98,6 +112,27 @@ defineFeature(feature, (test) => {
         mockPokemon,
       ]);
     });
+
+    when("The user clears the search bar", async () => {
+      instance.handleSearch("");
+      await HomeWrapper.update();
+    });
+
+    then(
+      "The Pokemon list should be cleared and fetched from the API",
+      async () => {
+        expect(spyHandleSinglePokemonCase).toHaveBeenCalled();
+      }
+    );
+
+    then(
+      "The Pokemon list should be updated with the fetched Pokemon",
+      async () => {
+        expect(HomeWrapper.find(PokemonList).props().pokemons).toEqual(
+          mockPokemons
+        );
+      }
+    );
   });
 
   test("User searches for an unknown Pokemon", ({ given, when, then }) => {
@@ -106,8 +141,8 @@ defineFeature(feature, (test) => {
         new Error("Pokemon not found")
       );
 
-      HomeWrapper = shallow(<Home />);
-      instance = HomeWrapper.instance() as Home;
+      HomeWrapper = shallow(<HomeView />);
+      instance = HomeWrapper.instance() as HomeView;
     });
 
     when("User enters an unknown Pokemon name in the search bar", async () => {
@@ -128,8 +163,8 @@ defineFeature(feature, (test) => {
         hasMore: false,
       });
 
-      HomeWrapper = shallow(<Home />);
-      instance = HomeWrapper.instance() as Home;
+      HomeWrapper = shallow(<HomeView />);
+      instance = HomeWrapper.instance() as HomeView;
     });
 
     when("User scrolls down to load more Pokemon", async () => {
@@ -142,4 +177,50 @@ defineFeature(feature, (test) => {
       expect(pokemonList.length).toBeGreaterThan(mockPokemons.length);
     });
   });
+
+  // test("User clears the search bar and fetches Pokemon", ({
+  //   given,
+  //   when,
+  //   then,
+  // }) => {
+  //   given("The user has searched for a Pokemon", async () => {
+  //     HomeWrapper = shallow(<HomeView />);
+  //     instance = HomeWrapper.instance() as HomeView;
+
+  //     instance.setState({ pokemonQuery: "pikachu", offset: 0 });
+
+  //     (getPokemon as jest.Mock).mockResolvedValue(mockPokemon);
+  //     (getPokemons as jest.Mock).mockResolvedValue(mockPokemons);
+  //     spyHandleSinglePokemonCase = jest.spyOn(
+  //       instance,
+  //       "handleSinglePokemonCase"
+  //     );
+
+  //     await instance.fetchPokemons();
+  //     HomeWrapper.update();
+  //   });
+
+  //   when("The user clears the search bar", () => {
+  //     instance.handleSearch("");
+  //     HomeWrapper.update();
+  //   });
+
+  //   then(
+  //     "The Pokemon list should be cleared and fetched from the API",
+  //     async () => {
+  //       expect(spyHandleSinglePokemonCase).toHaveBeenCalled();
+  //     }
+  //   );
+
+  //   then(
+  //     "The Pokemon list should be updated with the fetched Pokemons",
+  //     async () => {
+  //       await instance.fetchPokemons();
+  //       HomeWrapper.update();
+  //       expect(HomeWrapper.find(PokemonList).props().pokemons).toEqual([
+  //         mockPokemon,
+  //       ]);
+  //     }
+  //   );
+  // });
 });

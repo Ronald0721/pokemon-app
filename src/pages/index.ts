@@ -1,4 +1,4 @@
-import Home from "./Home";
-import PokemonView from "./PokemonView";
+import Home from "./Home/HomeView";
+import PokemonProfile from "./PokemonView/PokemonProfileView";
 
-export { Home, PokemonView };
+export { Home, PokemonProfile };

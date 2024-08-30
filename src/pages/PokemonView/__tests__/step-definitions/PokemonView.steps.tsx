@@ -1,11 +1,10 @@
 import { defineFeature, loadFeature } from "jest-cucumber";
 import { shallow, ShallowWrapper } from "enzyme";
-import React from "react";
-import { PokemonView } from "../..";
+import PokemonProfileView from "../../PokemonProfileView";
 import { getPokemon } from "../../../../services/getPokemons";
 import { getPokemonSpecies } from "../../../../services/getPokemonSpecies";
 import { PokemonDetails } from "../../../../types/pokemonTypes";
-import { RouteComponentProps } from "react-router-dom";
+import { getParams } from "../../../../utils/getParams";
 import { Typography } from "@material-ui/core";
 import ArrowBackIcon from "@material-ui/icons/ArrowBack";
 
@@ -15,15 +14,11 @@ const feature = loadFeature(
 
 jest.mock("../../../../services/getPokemons");
 jest.mock("../../../../services/getPokemonSpecies");
-
-interface RouteParams {
-  id: string;
-}
+jest.mock("../../../../utils/getParams");
 
 defineFeature(feature, (test) => {
-  let props: RouteComponentProps<RouteParams>;
   let wrapper: ShallowWrapper;
-  let instance: PokemonView;
+  let instance: PokemonProfileView;
 
   const mockPokemonDetails: PokemonDetails = {
     name: "pikachu",
@@ -58,35 +53,9 @@ defineFeature(feature, (test) => {
 
   beforeEach(() => {
     jest.resetModules();
-    global.fetch = jest.fn();
-    props = {
-      match: {
-        isExact: true,
-        params: { id: "pikachu" },
-        path: "/pokemon/:id",
-        url: "/pokemon/pikachu",
-      },
-      history: {
-        length: 1,
-        push: jest.fn(),
-        replace: jest.fn(),
-        go: jest.fn(),
-        goBack: jest.fn(),
-        goForward: jest.fn(),
-        block: jest.fn(),
-        listen: jest.fn(),
-        createHref: jest.fn(),
-        location: { pathname: "", search: "", state: {}, hash: "" },
-        action: "PUSH",
-      },
-      location: {
-        pathname: "",
-        search: "",
-        state: {},
-        hash: "",
-      },
-    };
+    jest.spyOn(window.history, "back").mockImplementation(() => {});
 
+    (getParams as jest.Mock).mockReturnValue({ id: "pikachu" });
     (getPokemon as jest.Mock).mockResolvedValue(mockPokemonDetails);
     (getPokemonSpecies as jest.Mock).mockResolvedValue({
       flavor_text_entries: [
@@ -100,8 +69,8 @@ defineFeature(feature, (test) => {
       ],
     });
 
-    wrapper = shallow(<PokemonView {...props} />);
-    instance = wrapper.instance() as PokemonView;
+    wrapper = shallow(<PokemonProfileView />);
+    instance = wrapper.instance() as PokemonProfileView;
   });
 
   test("User views Pokemon View Page", ({ given, when, then }) => {
@@ -130,7 +99,7 @@ defineFeature(feature, (test) => {
 
   test("User clicks the Go Back button", ({ given, when, then }) => {
     given("User is on the Pokemon View page", () => {
-      // Already set up in beforeEach
+      // Already initialized in beforeEac
     });
 
     when("User clicks the Go Back button", () => {
@@ -138,7 +107,7 @@ defineFeature(feature, (test) => {
     });
 
     then("User should be navigated back to the previous page", () => {
-      expect(props.history.goBack).toHaveBeenCalled();
+      expect(window.history.back).toHaveBeenCalled();
     });
   });
 });

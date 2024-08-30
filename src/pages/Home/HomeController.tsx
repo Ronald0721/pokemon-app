@@ -1,8 +1,5 @@
-import React, { Component } from "react";
-import { PokemonList, SearchBar, ErrorDisplay } from "../../components";
+import { Component } from "react";
 import { getPokemon, getPokemons } from "../../services/getPokemons";
-import InfiniteScroll from "react-infinite-scroll-component";
-import { Box, Container } from "@material-ui/core";
 import { Pokemon } from "../../types/pokemonTypes";
 
 // Props
@@ -44,14 +41,20 @@ export default class Home extends Component<Props, S> {
     }
   }
 
+  handleSinglePokemonCase = () => {
+    const { pokemonList } = this.state;
+    if (pokemonList.length === 1) {
+      this.setState({ pokemonList: [], loading: true, error: null });
+    } else {
+      this.setState({ loading: true, error: null });
+    }
+  };
+
   fetchPokemons = async () => {
-    const { pokemonList, limit, offset, pokemonQuery } = this.state;
+    const { limit, offset, pokemonQuery } = this.state;
 
     try {
-      pokemonList.length === 1
-        ? this.setState({ pokemonList: [], loading: true })
-        : this.setState({ loading: true });
-
+      this.handleSinglePokemonCase();
       if (!pokemonQuery) {
         const { pokemons, hasMore } = await getPokemons(limit, offset);
         this.setState((prevState) => ({
@@ -86,35 +89,6 @@ export default class Home extends Component<Props, S> {
   };
 
   fetchMoreData = async () => {
-    if (this.state.hasMore) {
-      await this.fetchPokemons();
-    }
+    this.state.hasMore && (await this.fetchPokemons());
   };
-
-  render() {
-    const { pokemonList, hasMore, error } = this.state;
-    const loader = <h1>...</h1>;
-
-    return (
-      <>
-        <SearchBar onSearch={this.handleSearch} />
-        <Container maxWidth="xl">
-          {error ? (
-            <Box>
-              <ErrorDisplay error={error} />
-            </Box>
-          ) : (
-            <InfiniteScroll
-              dataLength={pokemonList.length}
-              next={this.fetchMoreData}
-              hasMore={hasMore}
-              loader={loader}
-            >
-              <PokemonList pokemons={pokemonList} />
-            </InfiniteScroll>
-          )}
-        </Container>
-      </>
-    );
-  }
 }

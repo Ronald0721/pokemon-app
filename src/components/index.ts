@@ -4,6 +4,7 @@ import SearchBar from "./SearchBar/SearchBar";
 import SkeletonLoader from "./SkeletonLoader/SkeletonLoader";
 import PokemonTypeChip from "./PokemonTypeChip/PokemonTypeChip";
 import ErrorDisplay from "./ErrorDisplay/Error";
+import BackBtn from "./BackBtn/BackBtn";
 
 export {
   PokemonCard,
@@ -12,4 +13,5 @@ export {
   SkeletonLoader,
   PokemonTypeChip,
   ErrorDisplay,
+  BackBtn,
 };
